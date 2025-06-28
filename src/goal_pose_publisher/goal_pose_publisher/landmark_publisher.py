@@ -1,14 +1,16 @@
+import os
+import time
+
+import cv2
 import mediapipe as mp
+import numpy as np
+import rclpy
+from geometry_msgs.msg import Vector3
+from launch_ros.substitutions import FindPackageShare
 from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
-from launch_ros.substitutions import FindPackageShare
-import os
-import cv2
-import numpy as np
-import time
-import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Pose
+from robot_arms_teleop_interfaces.msg import Landmarks
 
 
 class LandMarkPublisher(Node):
@@ -17,7 +19,7 @@ class LandMarkPublisher(Node):
         self.get_logger().info("landmark_publisher node started")
         self.landmarked_image = []
 
-        self.publisher_ = self.create_publisher(Pose, 'landmarks', 10)
+        self.publisher_ = self.create_publisher(Landmarks, 'landmarks', 10)
         self.init_pose_detector_()
         self.timer_ = self.create_timer(1/self.fps, self.detect_pose_)
 
@@ -34,7 +36,7 @@ class LandMarkPublisher(Node):
                     mp_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
                     detection_result = self.landmarker.detect_for_video(mp_frame, self.frame_time_stamp)
-                    self.draw_landmarks_on_image_(detection_result, mp_frame)
+                    self.handle_landmarks_(detection_result, mp_frame)
 
                     cv2.imshow("Landmark Detection", self.landmarked_image)
                     cv2.waitKey(1)
@@ -89,7 +91,7 @@ class LandMarkPublisher(Node):
             options = PoseLandmarkerOptions(
                 base_options=BaseOptions(model_asset_path=model_path),
                 running_mode=VisionRunningMode.LIVE_STREAM,
-                result_callback=self.draw_landmarks_on_image_,
+                result_callback=self.handle_landmarks_,
                 )
             self.cap = cv2.VideoCapture(0)
 
@@ -99,6 +101,26 @@ class LandMarkPublisher(Node):
         self.landmarker = PoseLandmarker.create_from_options(options)
 
         self.frame_time_stamp = int(time.time()*1000)
+
+    def handle_landmarks_(self, *args):
+        self.draw_landmarks_on_image_(args[0], args[1])
+
+        pose_landmarks_list = args[0].pose_landmarks
+        msg = Landmarks()
+        msg.shoulder_top_right = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 12)
+        msg.shoulder_bottom_right = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 24)
+        msg.wrist_right = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 16)
+        msg.hand_right_thumb = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 22)
+        msg.hand_right_index = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 20)
+        msg.hand_right_pinky = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 18)
+        msg.shoulder_top_left = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 11)
+        msg.shoulder_bottom_left = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 23)
+        msg.wrist_left = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 15)
+        msg.hand_left_thumb = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 21)
+        msg.hand_left_index = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 19)
+        msg.hand_left_pinky = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 17)
+
+        self.publisher_.publish(msg)
     
     def draw_landmarks_on_image_(self, *args):
         detection_result = args[0]
@@ -123,6 +145,14 @@ class LandMarkPublisher(Node):
                 solutions.drawing_styles.get_default_pose_landmarks_style())
             
         self.landmarked_image = landmarked_frame
+
+    def get_positions_from_NormalizedLandmark_(self, landmarks, n):
+        print(landmarks)
+        msg = Vector3()
+        msg.x = landmarks[0][n].x
+        msg.y = landmarks[0][n].y
+        msg.z = landmarks[0][n].z
+        return msg
 
     def destroy_node(self):
         self.cap.release()

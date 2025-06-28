@@ -1,0 +1,12 @@
+geometry_msgs/Vector3 shoulder_top_right
+geometry_msgs/Vector3 shoulder_bottom_right
+geometry_msgs/Vector3 wrist_right
+geometry_msgs/Vector3 hand_right_thumb
+geometry_msgs/Vector3 hand_right_index
+geometry_msgs/Vector3 hand_right_pinky
+geometry_msgs/Vector3 shoulder_top_left
+geometry_msgs/Vector3 shoulder_bottom_left
+geometry_msgs/Vector3 wrist_left
+geometry_msgs/Vector3 hand_left_thumb
+geometry_msgs/Vector3 hand_left_index
+geometry_msgs/Vector3 hand_left_pinky
