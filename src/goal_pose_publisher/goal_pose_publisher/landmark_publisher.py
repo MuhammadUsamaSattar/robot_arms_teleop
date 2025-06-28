@@ -2,6 +2,7 @@ import os
 import time
 
 import cv2
+from cv_bridge import CvBridge
 import mediapipe as mp
 import numpy as np
 import rclpy
@@ -11,6 +12,7 @@ from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 from rclpy.node import Node
 from robot_arms_teleop_interfaces.msg import Landmarks
+from sensor_msgs.msg import Image
 
 
 class LandMarkPublisher(Node):
@@ -18,8 +20,10 @@ class LandMarkPublisher(Node):
         super().__init__('landmark_publisher')
         self.get_logger().info("landmark_publisher node started")
         self.landmarked_image = []
+        self.cv2_bridge = CvBridge()
 
-        self.publisher_ = self.create_publisher(Landmarks, 'landmarks', 10)
+        self.landmarks_publisher_ = self.create_publisher(Landmarks, 'landmarks', 10)
+        self.image_publisher_ = self.create_publisher(Image, 'image', 1)
         self.init_pose_detector_()
         self.timer_ = self.create_timer(1/self.fps, self.detect_pose_)
 
@@ -38,8 +42,8 @@ class LandMarkPublisher(Node):
                     detection_result = self.landmarker.detect_for_video(mp_frame, self.frame_time_stamp)
                     self.handle_landmarks_(detection_result, mp_frame)
 
-                    cv2.imshow("Landmark Detection", self.landmarked_image)
-                    cv2.waitKey(1)
+                    #cv2.imshow("Landmark Detection", self.landmarked_image)
+                    #cv2.waitKey(1)
 
                     self.frame_time_stamp = int((time.time()*1000))
 
@@ -57,8 +61,8 @@ class LandMarkPublisher(Node):
                     while len(self.landmarked_image) == 0:
                         pass
 
-                    cv2.imshow("Landmark Detection", self.landmarked_image)
-                    cv2.waitKey(1)
+                    #cv2.imshow("Landmark Detection", self.landmarked_image)
+                    #cv2.waitKey(1)
 
                     self.frame_time_stamp = int((time.time()*1000))
             
@@ -76,7 +80,6 @@ class LandMarkPublisher(Node):
         PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
         VisionRunningMode = mp.tasks.vision.RunningMode
 
-        #pkg_dir = ''
         pkg_dir = FindPackageShare('goal_pose_publisher').find('goal_pose_publisher')
         model_path = os.path.join(pkg_dir, 'models', 'pose_landmarker_full.task')
 
@@ -107,20 +110,20 @@ class LandMarkPublisher(Node):
 
         pose_landmarks_list = args[0].pose_landmarks
         msg = Landmarks()
-        msg.shoulder_top_right = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 12)
-        msg.shoulder_bottom_right = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 24)
-        msg.wrist_right = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 16)
-        msg.hand_right_thumb = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 22)
-        msg.hand_right_index = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 20)
-        msg.hand_right_pinky = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 18)
-        msg.shoulder_top_left = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 11)
-        msg.shoulder_bottom_left = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 23)
-        msg.wrist_left = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 15)
-        msg.hand_left_thumb = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 21)
-        msg.hand_left_index = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 19)
-        msg.hand_left_pinky = self.get_positions_from_NormalizedLandmark_(pose_landmarks_list, 17)
+        msg.shoulder_top_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 12)
+        msg.shoulder_bottom_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 24)
+        msg.wrist_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 16)
+        msg.hand_right_thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 22)
+        msg.hand_right_index = self.get_positions_from_landmark_list_(pose_landmarks_list, 20)
+        msg.hand_right_pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 18)
+        msg.shoulder_top_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 11)
+        msg.shoulder_bottom_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 23)
+        msg.wrist_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 15)
+        msg.hand_left_thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 21)
+        msg.hand_left_index = self.get_positions_from_landmark_list_(pose_landmarks_list, 19)
+        msg.hand_left_pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 17)
 
-        self.publisher_.publish(msg)
+        self.landmarks_publisher_.publish(msg)
     
     def draw_landmarks_on_image_(self, *args):
         detection_result = args[0]
@@ -145,14 +148,19 @@ class LandMarkPublisher(Node):
                 solutions.drawing_styles.get_default_pose_landmarks_style())
             
         self.landmarked_image = landmarked_frame
+        self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(self.landmarked_image))
 
-    def get_positions_from_NormalizedLandmark_(self, landmarks, n):
-        print(landmarks)
-        msg = Vector3()
-        msg.x = landmarks[0][n].x
-        msg.y = landmarks[0][n].y
-        msg.z = landmarks[0][n].z
-        return msg
+    def get_positions_from_landmark_list_(self, landmarks, n):
+        try:
+            msg = Vector3()
+
+            msg.x = landmarks[0][n].x
+            msg.y = landmarks[0][n].y
+            msg.z = landmarks[0][n].z
+            return msg
+        
+        except Exception:
+            self.get_logger().warn("Some critical landmarks are not detected in the frame")
 
     def destroy_node(self):
         self.cap.release()
