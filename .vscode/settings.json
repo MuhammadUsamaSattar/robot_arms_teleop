@@ -1,0 +1,14 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/usama/robot_arms_teleop/build/robot_arm_model",
+        "/home/usama/robot_arms_teleop/install/robot_arm_model/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/usama/robot_arms_teleop/build/robot_arm_model",
+        "/home/usama/robot_arms_teleop/install/robot_arm_model/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
