@@ -4,16 +4,23 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 import os
+import math
 
 
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
     urdf_dir = FindPackageShare('robot_arm_model').find('robot_arm_model')
-    urdf_file = os.path.join(urdf_dir, 'urdf', 'so101_new_calib.urdf')
+
+    urdf_file = os.path.join(urdf_dir, 'urdf', 'so101_new_calib_right.urdf')
 
     with open(urdf_file, 'r') as file:
-        robot_desc = file.read()
+        right_robot_desc = file.read()
+
+    urdf_file = os.path.join(urdf_dir, 'urdf', 'so101_new_calib_left.urdf')
+
+    with open(urdf_file, 'r') as file:
+        left_robot_desc = file.read()
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -24,13 +31,48 @@ def generate_launch_description():
             package='robot_state_publisher',
             executable='robot_state_publisher',
             name='robot_state_publisher',
+            namespace='right',
             output='screen',
-            parameters=[{'use_sim_time': use_sim_time, 'robot_description': robot_desc}]),
+            parameters=[{'use_sim_time': use_sim_time, 'robot_description': right_robot_desc}]),
         Node(
             package='robot_arm_model',
             executable='state_publisher',
             name='state_publisher',
-            output='screen'),
+            namespace='right',
+            output='screen',
+            parameters=[{'pos': -0.1, 'base': 'right_base'}]),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            namespace='right',
+            arguments=[
+                '--x', '0', '--y', '0', '--z', '0', '--yaw', str(math.pi/2),
+                '--frame-id', 'right_gripper', '--child-frame-id', 'right_goal_pose_frame'
+            ]
+        ),
+        Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            namespace='left',
+            output='screen',
+            parameters=[{'use_sim_time': use_sim_time, 'robot_description': left_robot_desc}]),
+        Node(
+            package='robot_arm_model',
+            executable='state_publisher',
+            name='state_publisher',
+            namespace='left',
+            output='screen',
+            parameters=[{'pos': 0.1, 'base': 'left_base'}]),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            namespace='left',
+            arguments=[
+                '--x', '0', '--y', '0', '--z', '0', '--yaw', str(math.pi/2),
+                '--frame-id', 'left_gripper', '--child-frame-id', 'left_goal_pose_frame'
+            ]
+        ),
         Node(
             package='rviz2',
             executable='rviz2',

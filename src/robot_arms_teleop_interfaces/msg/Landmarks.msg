@@ -1,0 +1,6 @@
+geometry_msgs/Vector3 shoulder_top
+geometry_msgs/Vector3 shoulder_bottom
+geometry_msgs/Vector3 wrist
+geometry_msgs/Vector3 thumb
+geometry_msgs/Vector3 index
+geometry_msgs/Vector3 pinky
