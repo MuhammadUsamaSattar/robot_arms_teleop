@@ -14,6 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'video'), glob('video/*')),
         (os.path.join('share', package_name, 'models'), glob('models/*')),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,7 +25,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'landmark_publisher = goal_pose_publisher.landmark_publisher:main'
+            'landmark_publisher = goal_pose_publisher.landmark_publisher:main',
+            'goal_pose_publisher = goal_pose_publisher.goal_pose_publisher:main',
         ],
     },
 )

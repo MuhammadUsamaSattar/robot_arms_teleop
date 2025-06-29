@@ -4,6 +4,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 import os
+import math
 
 
 def generate_launch_description():
@@ -36,5 +37,14 @@ def generate_launch_description():
             executable='rviz2',
             name='rviz2',
             arguments=['-d', PathJoinSubstitution([FindPackageShare('robot_arm_model'), 'rviz', 'default.rviz'])],
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=[
+                '--x', '0', '--y', '0', '--z', '0',
+                '--roll', str(-math.pi/2), '--pitch', str(-math.pi/2),
+                '--frame-id', 'wrist', '--child-frame-id', 'goal_pose_frame'
+            ]
         ),
     ])

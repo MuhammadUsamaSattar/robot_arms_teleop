@@ -40,15 +40,15 @@ class LandMarkPublisher(Node):
                     mp_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
                     detection_result = self.landmarker.detect_for_video(mp_frame, self.frame_time_stamp)
-                    self.handle_landmarks_(detection_result, mp_frame)
-
-                    #cv2.imshow("Landmark Detection", self.landmarked_image)
-                    #cv2.waitKey(1)
+                    self.publish_landmark_msgs_(detection_result, mp_frame)
 
                     self.frame_time_stamp = int((time.time()*1000))
 
                 else:
-                    self.get_logger().warn("No frame could be read from the video/stream")
+                    self.get_logger().warn("Video stream not available")
+                    self.get_logger().info("Reloading video")
+                    pkg_dir = FindPackageShare('goal_pose_publisher').find('goal_pose_publisher')
+                    self.cap = cv2.VideoCapture(os.path.join(pkg_dir, 'video', 'Video.mp4'))
 
             elif self.mode == 'LIVE_STREAM':
                 ret, frame = self.cap.read()
@@ -61,13 +61,12 @@ class LandMarkPublisher(Node):
                     while len(self.landmarked_image) == 0:
                         pass
 
-                    #cv2.imshow("Landmark Detection", self.landmarked_image)
-                    #cv2.waitKey(1)
-
                     self.frame_time_stamp = int((time.time()*1000))
             
                 else:
-                    self.get_logger().warn("No frame could be read from the video/stream")
+                    self.get_logger().warn("Camera stream not available")
+                    self.get_logger().info("Restarting camera stream")
+                    self.cap = cv2.VideoCapture(0)
 
         else:
             self.get_logger().error("Error opening video/steam")
@@ -94,7 +93,7 @@ class LandMarkPublisher(Node):
             options = PoseLandmarkerOptions(
                 base_options=BaseOptions(model_asset_path=model_path),
                 running_mode=VisionRunningMode.LIVE_STREAM,
-                result_callback=self.handle_landmarks_,
+                result_callback=self.publish_landmark_msgs_,
                 )
             self.cap = cv2.VideoCapture(0)
 
@@ -105,30 +104,37 @@ class LandMarkPublisher(Node):
 
         self.frame_time_stamp = int(time.time()*1000)
 
-    def handle_landmarks_(self, *args):
-        self.draw_landmarks_on_image_(args[0], args[1])
-
-        pose_landmarks_list = args[0].pose_landmarks
-        msg = Landmarks()
-        msg.shoulder_top_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 12)
-        msg.shoulder_bottom_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 24)
-        msg.wrist_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 16)
-        msg.hand_right_thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 22)
-        msg.hand_right_index = self.get_positions_from_landmark_list_(pose_landmarks_list, 20)
-        msg.hand_right_pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 18)
-        msg.shoulder_top_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 11)
-        msg.shoulder_bottom_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 23)
-        msg.wrist_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 15)
-        msg.hand_left_thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 21)
-        msg.hand_left_index = self.get_positions_from_landmark_list_(pose_landmarks_list, 19)
-        msg.hand_left_pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 17)
-
-        self.landmarks_publisher_.publish(msg)
-    
-    def draw_landmarks_on_image_(self, *args):
+    def publish_landmark_msgs_(self, *args):
         detection_result = args[0]
         rgb_image = args[1].numpy_view()
-        
+
+        try:
+            self.generate_landmarked_image_(detection_result, rgb_image)
+
+            pose_landmarks_list = args[0].pose_landmarks
+            msg = Landmarks()
+            msg.shoulder_top_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 12)
+            msg.shoulder_bottom_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 24)
+            msg.wrist_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 16)
+            msg.hand_right_thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 22)
+            msg.hand_right_index = self.get_positions_from_landmark_list_(pose_landmarks_list, 20)
+            msg.hand_right_pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 18)
+            msg.shoulder_top_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 11)
+            msg.shoulder_bottom_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 23)
+            msg.wrist_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 15)
+            msg.hand_left_thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 21)
+            msg.hand_left_index = self.get_positions_from_landmark_list_(pose_landmarks_list, 19)
+            msg.hand_left_pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 17)
+
+            self.landmarks_publisher_.publish(msg)
+            self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(self.landmarked_image))
+
+        except Exception:
+            self.get_logger().warn("Some critical landmarks are not detected in the frame. " \
+            "No pose will be published. Image without landmarks will be published.")
+            self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(rgb_image))
+    
+    def generate_landmarked_image_(self, detection_result, rgb_image):
         pose_landmarks_list = detection_result.pose_landmarks
         landmarked_frame = np.copy(rgb_image)
 
@@ -148,19 +154,14 @@ class LandMarkPublisher(Node):
                 solutions.drawing_styles.get_default_pose_landmarks_style())
             
         self.landmarked_image = landmarked_frame
-        self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(self.landmarked_image))
 
     def get_positions_from_landmark_list_(self, landmarks, n):
-        try:
-            msg = Vector3()
+        msg = Vector3()
 
-            msg.x = landmarks[0][n].x
-            msg.y = landmarks[0][n].y
-            msg.z = landmarks[0][n].z
-            return msg
-        
-        except Exception:
-            self.get_logger().warn("Some critical landmarks are not detected in the frame")
+        msg.x = landmarks[0][n].x
+        msg.y = landmarks[0][n].y
+        msg.z = landmarks[0][n].z
+        return msg
 
     def destroy_node(self):
         self.cap.release()
