@@ -50,6 +50,7 @@ class GoalPosePublisher(Node):
         self.claw_closed = Bool()
         self.claw_closed_conf = 0.8
         self.buffer_size = 5
+        self.scale = 0.2
 
     def publish_goal_pose_(self, msg):
         limit = msg.shoulder_bottom.y - msg.shoulder_top.y
@@ -85,8 +86,8 @@ class GoalPosePublisher(Node):
                 goal_pose.header.stamp = self.get_clock().now().to_msg()
                 goal_pose.header.frame_id = self.get_namespace() + '_goal_pose_frame'
 
-                goal_pose.pose.position.x += goal[0]/self.buffer_size
-                goal_pose.pose.position.y += goal[1]/self.buffer_size
+                goal_pose.pose.position.x += self.scale*goal[0]/self.buffer_size
+                goal_pose.pose.position.y += self.scale*goal[1]/self.buffer_size
                 yaw += goal[2]/self.buffer_size
 
             q = quaternion_from_euler(0, 0, yaw)

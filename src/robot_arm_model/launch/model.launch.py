@@ -40,15 +40,14 @@ def generate_launch_description():
             name='state_publisher',
             namespace='right',
             output='screen',
-            parameters=[{'pos': -0.5, 'base': 'right_base'}]),
+            parameters=[{'pos': -0.1, 'base': 'right_base'}]),
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             namespace='right',
             arguments=[
-                '--x', '0', '--y', '0', '--z', '0',
-                '--roll', str(-math.pi/2), '--pitch', str(-math.pi/2),
-                '--frame-id', 'right_wrist', '--child-frame-id', 'right_goal_pose_frame'
+                '--x', '0', '--y', '0', '--z', '0', '--yaw', str(math.pi/2),
+                '--frame-id', 'right_gripper', '--child-frame-id', 'right_goal_pose_frame'
             ]
         ),
         Node(
@@ -64,15 +63,14 @@ def generate_launch_description():
             name='state_publisher',
             namespace='left',
             output='screen',
-            parameters=[{'pos': 0.5, 'base': 'left_base'}]),
+            parameters=[{'pos': 0.1, 'base': 'left_base'}]),
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             namespace='left',
             arguments=[
-                '--x', '0', '--y', '0', '--z', '0',
-                '--roll', str(-math.pi/2), '--pitch', str(-math.pi/2),
-                '--frame-id', 'left_wrist', '--child-frame-id', 'left_goal_pose_frame'
+                '--x', '0', '--y', '0', '--z', '0', '--yaw', str(math.pi/2),
+                '--frame-id', 'left_gripper', '--child-frame-id', 'left_goal_pose_frame'
             ]
         ),
         Node(
