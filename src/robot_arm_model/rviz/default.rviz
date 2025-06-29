@@ -57,7 +57,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /robot_description
+        Value: /right/robot_description
       Enabled: true
       Links:
         All Links Enabled: true
@@ -65,37 +65,37 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base:
+        right_base:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        gripper:
+        right_gripper:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        jaw:
+        right_jaw:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        lower_arm:
+        right_lower_arm:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        shoulder:
+        right_shoulder:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        upper_arm:
+        right_upper_arm:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        wrist:
+        right_wrist:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -103,11 +103,77 @@ Visualization Manager:
       Mass Properties:
         Inertia: false
         Mass: false
-      Name: RobotModel
+      Name: RobotModel_Right
       TF Prefix: ""
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /left/robot_description
+      Enabled: false
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: RobotModel_Left
+      TF Prefix: ""
+      Update Interval: 0
+      Value: false
+      Visual Enabled: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.029999999329447746
+      Head Radius: 0.009999999776482582
+      Name: Pose_Right
+      Shaft Length: 0.10000000149011612
+      Shaft Radius: 0.004999999888241291
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /right/goal_pose
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/Pose
+      Color: 255; 25; 0
+      Enabled: false
+      Head Length: 0.029999999329447746
+      Head Radius: 0.009999999776482582
+      Name: Pose_Left
+      Shaft Length: 0.10000000149011612
+      Shaft Radius: 0.004999999888241291
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /left/goal_pose
+      Value: false
     - Class: rviz_default_plugins/Image
       Enabled: true
       Max Value: 1
@@ -121,26 +187,6 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /image
-      Value: true
-    - Alpha: 1
-      Axes Length: 1
-      Axes Radius: 0.10000000149011612
-      Class: rviz_default_plugins/Pose
-      Color: 255; 25; 0
-      Enabled: true
-      Head Length: 0.029999999329447746
-      Head Radius: 0.009999999776482582
-      Name: Pose
-      Shaft Length: 0.10000000149011612
-      Shaft Radius: 0.004999999888241291
-      Shape: Arrow
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /goal_pose_right
       Value: true
   Enabled: true
   Global Options:
@@ -188,25 +234,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.5420700311660767
+      Distance: 3.022428035736084
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.10760996490716934
-        Y: -0.20187923312187195
-        Z: -0.006887680850923061
+        X: -0.2920142412185669
+        Y: -0.28821608424186707
+        Z: 0.13600242137908936
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6903976798057556
+      Pitch: 0.41039764881134033
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.76858377456665
+      Yaw: 5.673583984375
     Saved: ~
 Window Geometry:
   Displays:
@@ -226,5 +272,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1394
-  X: 306
-  Y: 0
+  X: 383
+  Y: 135

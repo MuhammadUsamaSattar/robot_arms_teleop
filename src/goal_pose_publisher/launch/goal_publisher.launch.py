@@ -10,5 +10,11 @@ def generate_launch_description():
         Node(
             package='goal_pose_publisher',
             executable='goal_pose_publisher',
+            namespace='right',
+        ),
+        Node(
+            package='goal_pose_publisher',
+            executable='goal_pose_publisher',
+            namespace='left',
         ),
     ])

@@ -18,13 +18,19 @@ class StatePublisher(Node):
         self.nodeName = self.get_name()
         self.get_logger().info("{0} started".format(self.nodeName))
 
+        self.declare_parameter('pos', 0.)
+        pos = self.get_parameter('pos').get_parameter_value().double_value
+
+        self.declare_parameter('base', 'base')
+        base = self.get_parameter('base').get_parameter_value().string_value
+
         #degree = pi / 180.0
         loop_rate = self.create_rate(30)
 
         # message declarations
         odom_trans = TransformStamped()
         odom_trans.header.frame_id = 'odom'
-        odom_trans.child_frame_id = 'base'
+        odom_trans.child_frame_id = base
         joint_state = JointState()
 
         try:
@@ -39,7 +45,7 @@ class StatePublisher(Node):
 
                 # update transform
                 odom_trans.header.stamp = now.to_msg()
-                odom_trans.transform.translation.x = 0.
+                odom_trans.transform.translation.x = pos
                 odom_trans.transform.translation.y = 0.
                 odom_trans.transform.translation.z = 0.
                 odom_trans.transform.rotation = \

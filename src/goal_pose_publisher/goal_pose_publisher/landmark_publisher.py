@@ -19,10 +19,12 @@ class LandMarkPublisher(Node):
     def __init__(self):
         super().__init__('landmark_publisher')
         self.get_logger().info("landmark_publisher node started")
+        self.video_file = "Video.mp4"
         self.landmarked_image = []
         self.cv2_bridge = CvBridge()
 
-        self.landmarks_publisher_ = self.create_publisher(Landmarks, 'landmarks', 10)
+        self.landmarks_publisher_right_ = self.create_publisher(Landmarks, '/right/landmarks', 10)
+        self.landmarks_publisher_left_ = self.create_publisher(Landmarks, '/left/landmarks', 10)
         self.image_publisher_ = self.create_publisher(Image, 'image', 1)
         self.init_pose_detector_()
         self.timer_ = self.create_timer(1/self.fps, self.detect_pose_)
@@ -48,7 +50,7 @@ class LandMarkPublisher(Node):
                     self.get_logger().warn("Video stream not available")
                     self.get_logger().info("Reloading video")
                     pkg_dir = FindPackageShare('goal_pose_publisher').find('goal_pose_publisher')
-                    self.cap = cv2.VideoCapture(os.path.join(pkg_dir, 'video', 'Video.mp4'))
+                    self.cap = cv2.VideoCapture(os.path.join(pkg_dir, 'video', self.video_file))
 
             elif self.mode == 'LIVE_STREAM':
                 ret, frame = self.cap.read()
@@ -87,7 +89,7 @@ class LandMarkPublisher(Node):
                 base_options=BaseOptions(model_asset_path=model_path),
                 running_mode=VisionRunningMode.VIDEO,
                 )
-            self.cap = cv2.VideoCapture(os.path.join(pkg_dir, 'video', 'Video.mp4'))
+            self.cap = cv2.VideoCapture(os.path.join(pkg_dir, 'video', self.video_file))
             
         elif self.mode == 'LIVE_STREAM':
             options = PoseLandmarkerOptions(
@@ -112,21 +114,26 @@ class LandMarkPublisher(Node):
             self.generate_landmarked_image_(detection_result, rgb_image)
 
             pose_landmarks_list = args[0].pose_landmarks
-            msg = Landmarks()
-            msg.shoulder_top_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 12)
-            msg.shoulder_bottom_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 24)
-            msg.wrist_right = self.get_positions_from_landmark_list_(pose_landmarks_list, 16)
-            msg.hand_right_thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 22)
-            msg.hand_right_index = self.get_positions_from_landmark_list_(pose_landmarks_list, 20)
-            msg.hand_right_pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 18)
-            msg.shoulder_top_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 11)
-            msg.shoulder_bottom_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 23)
-            msg.wrist_left = self.get_positions_from_landmark_list_(pose_landmarks_list, 15)
-            msg.hand_left_thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 21)
-            msg.hand_left_index = self.get_positions_from_landmark_list_(pose_landmarks_list, 19)
-            msg.hand_left_pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 17)
+            msg_right = Landmarks()
+            msg_left = Landmarks()
 
-            self.landmarks_publisher_.publish(msg)
+            msg_right.shoulder_top = self.get_positions_from_landmark_list_(pose_landmarks_list, 12)
+            msg_right.shoulder_bottom = self.get_positions_from_landmark_list_(pose_landmarks_list, 24)
+            msg_right.wrist = self.get_positions_from_landmark_list_(pose_landmarks_list, 16)
+            msg_right.thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 22)
+            msg_right.index = self.get_positions_from_landmark_list_(pose_landmarks_list, 20)
+            msg_right.pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 18)
+
+            msg_left = Landmarks()
+            msg_left.shoulder_top = self.get_positions_from_landmark_list_(pose_landmarks_list, 11)
+            msg_left.shoulder_bottom = self.get_positions_from_landmark_list_(pose_landmarks_list, 23)
+            msg_left.wrist = self.get_positions_from_landmark_list_(pose_landmarks_list, 15)
+            msg_left.thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 21)
+            msg_left.index = self.get_positions_from_landmark_list_(pose_landmarks_list, 19)
+            msg_left.pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 17)
+
+            self.landmarks_publisher_right_.publish(msg_right)
+            self.landmarks_publisher_left_.publish(msg_left)
             self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(self.landmarked_image))
 
         except Exception:
