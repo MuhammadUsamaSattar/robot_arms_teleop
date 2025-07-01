@@ -21,37 +21,31 @@ class StatePublisher(Node):
         self.declare_parameter('pos', 0.)
         pos = self.get_parameter('pos').get_parameter_value().double_value
 
-        self.declare_parameter('base', 'base')
-        base = self.get_parameter('base').get_parameter_value().string_value
-
-        #degree = pi / 180.0
         loop_rate = self.create_rate(30)
 
-        # message declarations
         odom_trans = TransformStamped()
         odom_trans.header.frame_id = 'odom'
-        odom_trans.child_frame_id = base
+        odom_trans.child_frame_id = 'combined_base'
         joint_state = JointState()
 
         try:
             while rclpy.ok():
                 rclpy.spin_once(self)
 
-                # update joint_state
                 now = self.get_clock().now()
                 joint_state.header.stamp = now.to_msg()
-                joint_state.name = ['1', '2', '3', '4', '5', '6']
-                joint_state.position = [0., 0., 0., 0., 0., 0.]
+                joint_state.name = ['left_1', 'left_2', 'left_3', 'left_4', 'left_5', 'left_6', 
+                'right_1', 'right_2', 'right_3', 'right_4', 'right_5', 'right_6']
+                joint_state.position = [0., 0., 0., 0., 0., 0., 
+                0., 0., 0., 0., 0., 0.]
 
-                # update transform
                 odom_trans.header.stamp = now.to_msg()
                 odom_trans.transform.translation.x = pos
                 odom_trans.transform.translation.y = 0.
                 odom_trans.transform.translation.z = 0.
                 odom_trans.transform.rotation = \
-                    euler_to_quaternion(0, 0, 0) # roll,pitch,yaw
+                    euler_to_quaternion(0, 0, 0)
 
-                # send the joint state and transform
                 self.joint_pub.publish(joint_state)
                 self.broadcaster.sendTransform(odom_trans)
 

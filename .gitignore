@@ -3,3 +3,4 @@ build/
 log/
 *pycache*
 **/video/*
+.vscode/

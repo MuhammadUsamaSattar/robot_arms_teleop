@@ -6,7 +6,9 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
+        "/home/usama/robot_arms_teleop/install/robot_arms_teleop_interfaces/include/**",
         "/opt/ros/humble/include/**",
+        "/home/usama/robot_arms_teleop/src/robot_arms_teleop_interfaces/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",
