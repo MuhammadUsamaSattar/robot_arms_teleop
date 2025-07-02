@@ -10,61 +10,61 @@ default_acceleration_scaling_factor: 0.1
 joint_limits:
   left_1:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   left_2:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   left_3:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   left_4:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   left_5:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   left_6:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   right_1:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   right_2:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   right_3:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   right_4:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   right_5:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
   right_6:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0
