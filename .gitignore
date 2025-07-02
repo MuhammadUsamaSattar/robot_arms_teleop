@@ -2,4 +2,4 @@ install/
 build/
 log/
 *pycache*
-**/video/*
+.vscode/

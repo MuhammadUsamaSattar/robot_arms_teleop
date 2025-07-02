@@ -2,10 +2,13 @@ import math
 
 import rclpy
 import numpy as np
+import tf2_geometry_msgs
 from geometry_msgs.msg import PoseStamped
 from rclpy.node import Node
 from robot_arms_teleop_interfaces.msg import Landmarks
 from std_msgs.msg import Bool
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
 
 
 def distance(p1, p2):
@@ -39,6 +42,17 @@ class GoalPosePublisher(Node):
     def __init__(self):
         super().__init__('goal_pose_publisher')
         self.get_logger().info(self.get_namespace() + "/goal_pose_publisher node started")
+
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+        while True:
+            try:
+                self.transform = self.tf_buffer.lookup_transform('combined_base', self.get_namespace()[1:] + '_goal_pose_frame', 
+                                                                 rclpy.time.Time())
+                break
+
+            except Exception:
+                rclpy.spin_once(self)
 
         self.sub_ = self.create_subscription(Landmarks, 'landmarks', self.publish_goal_pose_, 10)
         self.pub_pose_ = self.create_publisher(PoseStamped, 'goal_pose', 10)
@@ -77,15 +91,14 @@ class GoalPosePublisher(Node):
             self.claw_closed_buffer.append(True)
 
         if len(self.goal_pose_buffer) == self.buffer_size:
+            goal_pose.header.stamp = self.get_clock().now().to_msg()
+            goal_pose.header.frame_id = self.get_namespace() + '_goal_pose_frame'
             goal_pose.pose.position.x = 0.
             goal_pose.pose.position.y = 0.
             goal_pose.pose.position.z = 0.
             yaw = 0.
 
             for goal in self.goal_pose_buffer:
-                goal_pose.header.stamp = self.get_clock().now().to_msg()
-                goal_pose.header.frame_id = self.get_namespace() + '_goal_pose_frame'
-
                 goal_pose.pose.position.x += self.scale*goal[0]/self.buffer_size
                 goal_pose.pose.position.y += self.scale*goal[1]/self.buffer_size
                 yaw += goal[2]/self.buffer_size
@@ -96,6 +109,8 @@ class GoalPosePublisher(Node):
             goal_pose.pose.orientation.y = q[1]
             goal_pose.pose.orientation.z = q[2]
             goal_pose.pose.orientation.w = q[3]
+
+            goal_pose = tf2_geometry_msgs.do_transform_pose_stamped(goal_pose, self.transform)
 
             if self.claw_closed_buffer.count(True)/self.buffer_size >= self.claw_closed_conf:
                 self.claw_closed.data = True
