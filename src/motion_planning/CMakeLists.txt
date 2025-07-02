@@ -9,9 +9,15 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 add_executable(motion_planning src/motion_planning.cpp)
-ament_target_dependencies(motion_planning moveit_ros_planning_interface rclcpp)
+ament_target_dependencies(motion_planning moveit_ros_planning_interface rclcpp std_msgs geometry_msgs)
+
+install(
+    DIRECTORY launch
+    DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

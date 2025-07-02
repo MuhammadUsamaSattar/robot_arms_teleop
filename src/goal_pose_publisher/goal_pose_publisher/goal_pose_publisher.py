@@ -43,6 +43,17 @@ class GoalPosePublisher(Node):
         super().__init__('goal_pose_publisher')
         self.get_logger().info(self.get_namespace() + "/goal_pose_publisher node started")
 
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+        while True:
+            try:
+                self.transform = self.tf_buffer.lookup_transform('combined_base', self.get_namespace()[1:] + '_goal_pose_frame', 
+                                                                 rclpy.time.Time())
+                break
+
+            except Exception:
+                rclpy.spin_once(self)
+
         self.sub_ = self.create_subscription(Landmarks, 'landmarks', self.publish_goal_pose_, 10)
         self.pub_pose_ = self.create_publisher(PoseStamped, 'goal_pose', 10)
         self.pub_claw_closed_ = self.create_publisher(Bool, 'claw_closed', 10)
@@ -54,17 +65,6 @@ class GoalPosePublisher(Node):
         self.claw_closed_conf = 0.8
         self.buffer_size = 5
         self.scale = 0.2
-        self.tf_buffer = Buffer()
-        self.tf_listener = TransformListener(self.tf_buffer, self)
-
-        while True:
-            try:
-                self.transform = self.tf_buffer.lookup_transform('odom', self.get_namespace()[1:] + '_goal_pose_frame', 
-                                                                 rclpy.time.Time())
-                break
-
-            except Exception:
-                rclpy.spin_once(self)
 
     def publish_goal_pose_(self, msg):
         limit = msg.shoulder_bottom.y - msg.shoulder_top.y
