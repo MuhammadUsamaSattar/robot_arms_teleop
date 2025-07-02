@@ -11,6 +11,7 @@ from launch_ros.substitutions import FindPackageShare
 from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 from rclpy.node import Node
+from rcl_interfaces.msg import ParameterDescriptor
 from robot_arms_teleop_interfaces.msg import Landmarks
 from sensor_msgs.msg import Image
 
@@ -19,7 +20,14 @@ class LandMarkPublisher(Node):
     def __init__(self):
         super().__init__('landmark_publisher')
         self.get_logger().info("landmark_publisher node started")
-        self.video_file = "Video.mp4"
+
+        self.declare_parameter('video_file', 'Video.mp4', ParameterDescriptor(description='Name of video file placed in video directory. ' \
+        'Defaults to Video.mp4. Only works with \'VIDEO\' mode.'))
+        self.video_file = self.get_parameter('video_file').get_parameter_value().string_value
+
+        self.declare_parameter('mode', 'LIVE_STREAM', ParameterDescriptor(description='Mode of video stream. Options are \'VIDEO\' and \'LIVE_STREAM\''))
+        self.mode = self.get_parameter('mode').get_parameter_value().string_value
+
         self.landmarked_image = []
         self.cv2_bridge = CvBridge()
 
@@ -74,8 +82,6 @@ class LandMarkPublisher(Node):
             self.get_logger().error("Error opening video/steam")
 
     def init_pose_detector_(self):
-        self.mode = 'VIDEO'
-
         BaseOptions = mp.tasks.BaseOptions
         PoseLandmarker = mp.tasks.vision.PoseLandmarker
         PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
@@ -98,6 +104,10 @@ class LandMarkPublisher(Node):
                 result_callback=self.publish_landmark_msgs_,
                 )
             self.cap = cv2.VideoCapture(0)
+
+            ret, _ = self.cap.read()
+            if not ret:
+                self.get_logger().error("No camera accessible")
 
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         self.frame_time_ms = int(1000/self.fps)

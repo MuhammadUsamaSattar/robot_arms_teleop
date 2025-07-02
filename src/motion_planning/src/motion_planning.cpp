@@ -37,18 +37,18 @@ private:
 
     gripper_interface_ = std::make_shared<moveit::planning_interface::MoveGroupInterface>(
       shared_from_this(), gripper_group_name_);
-    arm_interface_ = std::make_shared<moveit::planning_interface::MoveGroupInterface>(
-      shared_from_this(), arm_group_name_);
+    // arm_interface_ = std::make_shared<moveit::planning_interface::MoveGroupInterface>(
+    //   shared_from_this(), arm_group_name_);
 
     jaw_subscriber_ = this->create_subscription<std_msgs::msg::Bool>(
       ns + "/claw_closed", 10,
       std::bind(&MotionPlanningNode::jaw_callback, this, std::placeholders::_1)
     );
 
-    pose_subscriber_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(
-      ns + "/goal_pose", 10,
-      std::bind(&MotionPlanningNode::goal_pose_callback, this, std::placeholders::_1)
-    );
+    // pose_subscriber_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(
+    //   ns + "/goal_pose", 10,
+    //   std::bind(&MotionPlanningNode::goal_pose_callback, this, std::placeholders::_1)
+    // );
 
     RCLCPP_INFO(this->get_logger(), "Subscribed to: %s and %s", 
                 (ns + "/claw_closed").c_str(),

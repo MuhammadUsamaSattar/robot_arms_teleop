@@ -15,6 +15,11 @@ find_package(geometry_msgs REQUIRED)
 add_executable(motion_planning src/motion_planning.cpp)
 ament_target_dependencies(motion_planning moveit_ros_planning_interface rclcpp std_msgs geometry_msgs)
 
+install(TARGETS
+  motion_planning
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 install(
     DIRECTORY launch
     DESTINATION share/${PROJECT_NAME})
