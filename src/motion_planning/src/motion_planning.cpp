@@ -72,7 +72,7 @@ private:
     );
 
     pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(
-      "/random_pose", 10
+      "current_goal_pose", 10
     );
 
     RCLCPP_INFO(this->get_logger(), "Subscribed to: %s and %s",
