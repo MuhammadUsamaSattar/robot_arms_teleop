@@ -75,7 +75,7 @@ class GoalPosePublisher(Node):
         goal.append((msg.wrist.y - msg.shoulder_top.y) / limit)
 
         hand_dx = ((msg.index.x + msg.pinky.x)/2) - msg.wrist.x
-        hand_dy = ((msg.index.y + msg.pinky.y)/2) - msg.wrist.y
+        hand_dy = -(((msg.index.y + msg.pinky.y)/2) - msg.wrist.y)
 
         yaw = math.atan2(hand_dy, hand_dx)
         goal.append(yaw)

@@ -23,8 +23,8 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             arguments=[
-                '--x', '0', '--y', '0', '--z', '0', '--yaw', str(math.pi/2),
-                '--frame-id', 'right_gripper', '--child-frame-id', 'right_goal_pose_frame'
+                '--x', '0', '--y', '0', '--z', '0', '--roll', str(0), '--pitch', str(0), '--yaw', str(0),
+                '--frame-id', 'right_panda_hand', '--child-frame-id', 'right_goal_pose_frame'
             ],
             parameters=[
                 {'use_sim_time': False}
@@ -34,8 +34,8 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             arguments=[
-                '--x', '0', '--y', '0', '--z', '0', '--yaw', str(math.pi/2),
-                '--frame-id', 'left_gripper', '--child-frame-id', 'left_goal_pose_frame'
+                '--x', '0', '--y', '0', '--z', '0', '--roll', str(0), '--pitch', str(0), '--yaw', str(0),
+                '--frame-id', 'left_panda_hand', '--child-frame-id', 'left_goal_pose_frame'
             ],
             parameters=[
                 {'use_sim_time': False}

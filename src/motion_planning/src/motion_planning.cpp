@@ -61,14 +61,18 @@ private:
     rclcpp::QoS qos_profile(1);
     qos_profile.best_effort();
 
-    // jaw_subscriber_ = this->create_subscription<std_msgs::msg::Bool>(
-    //   ns + "/claw_closed", qos_profile,
-    //   std::bind(&MotionPlanningNode::jaw_callback, this, std::placeholders::_1)
-    // );
+    jaw_subscriber_ = this->create_subscription<std_msgs::msg::Bool>(
+      ns + "/claw_closed", qos_profile,
+      std::bind(&MotionPlanningNode::jaw_callback, this, std::placeholders::_1)
+    );
 
     pose_subscriber_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(
       ns + "/goal_pose", qos_profile,
       std::bind(&MotionPlanningNode::goal_pose_callback, this, std::placeholders::_1)
+    );
+
+    pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>(
+      "/random_pose", 10
     );
 
     RCLCPP_INFO(this->get_logger(), "Subscribed to: %s and %s",
@@ -117,9 +121,8 @@ private:
     try {
       RCLCPP_INFO(this->get_logger(), "Received goal pose");
 
-      // arm_interface_->setPoseTarget(*msg);
-      geometry_msgs::msg::PoseStamped msg = arm_interface_->getRandomPose();
-      arm_interface_->setPoseTarget(msg);
+      pose_pub_->publish(*msg);
+      arm_interface_->setPoseTarget(*msg);
 
       moveit::planning_interface::MoveGroupInterface::Plan plan;
       bool success = static_cast<bool>(arm_interface_->plan(plan));
@@ -150,6 +153,7 @@ private:
   // ROS 2 subscriptions
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr jaw_subscriber_;
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_subscriber_;
+  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_;
 
   std::string gripper_group_name_;
   std::string arm_group_name_;
