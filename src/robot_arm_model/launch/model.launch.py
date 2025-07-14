@@ -17,7 +17,7 @@ def generate_launch_description():
     #with open(urdf_file, 'r') as file:
     #    right_robot_desc = file.read()
 
-    urdf_file = os.path.join(urdf_dir, 'urdf', 'so101_new_calib.urdf')
+    urdf_file = os.path.join(urdf_dir, 'urdf', 'panda.urdf')
 
     with open(urdf_file, 'r') as file:
         robot_desc = file.read()
@@ -32,7 +32,7 @@ def generate_launch_description():
             executable='robot_state_publisher',
             name='robot_state_publisher',
             output='screen',
-            parameters=[{'use_sim_time': use_sim_time, 'robot_description': robot_desc}]),
+            parameters=[{'robot_description': robot_desc}]),
         Node(
             package='robot_arm_model',
             executable='state_publisher',

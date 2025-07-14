@@ -7,9 +7,9 @@
   <maintainer email="usamasattar.3347@gmail.com">usama</maintainer>
   <license>Apache-2.0</license>
 
-  <depend>mediapipe</depend>
-  <depend>numpy</depend>
-  <depend>cv2</depend>
+  <depend>python3-mediapipe-pip</depend>
+  <depend>python3-numpy</depend>
+  <depend>python3-opencv</depend>
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>

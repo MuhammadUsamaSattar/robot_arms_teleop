@@ -34,10 +34,14 @@ class StatePublisher(Node):
 
                 now = self.get_clock().now()
                 joint_state.header.stamp = now.to_msg()
-                joint_state.name = ['left_1', 'left_2', 'left_3', 'left_4', 'left_5', 'left_6', 
-                'right_1', 'right_2', 'right_3', 'right_4', 'right_5', 'right_6']
-                joint_state.position = [0., 0., 0., 0., 0., 0., 
-                0., 0., 0., 0., 0., 0.]
+                joint_state.name = ['left_panda_joint1', 'left_panda_joint2', 'left_panda_joint3', 
+                                    'left_panda_joint4', 'left_panda_joint5', 'left_panda_joint6', 
+                                    'left_panda_joint7', "left_panda_finger_joint1", "left_panda_finger_joint2", 
+                                    'right_panda_joint1', 'right_panda_joint2', 'right_panda_joint3', 
+                                    'right_panda_joint4', 'right_panda_joint5', 'right_panda_joint6', 
+                                    'right_panda_joint7', "right_panda_finger_joint1", "right_panda_finger_joint1"]
+                joint_state.position = [0., 0., 0., 0., 0., 0., 0., 0., 0., 
+                                        0., 0., 0., 0., 0., 0., 0., 0., 0.]
 
                 odom_trans.header.stamp = now.to_msg()
                 odom_trans.transform.translation.x = pos

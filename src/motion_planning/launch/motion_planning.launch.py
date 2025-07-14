@@ -3,7 +3,7 @@ from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 
 def generate_launch_description():
-    moveit_config = MoveItConfigsBuilder("motion_planning").to_moveit_configs()
+    moveit_config = MoveItConfigsBuilder("panda").to_moveit_configs()
 
     motion_planning_node_left = Node(
         package="motion_planning",
@@ -14,6 +14,10 @@ def generate_launch_description():
             moveit_config.robot_description,
             moveit_config.robot_description_semantic,
             moveit_config.robot_description_kinematics,
+            {'use_sim_time': False},
+        ],
+        remappings=[
+        ('joint_states', '/joint_states')
         ],
     )
     motion_planning_node_right = Node(
@@ -25,6 +29,10 @@ def generate_launch_description():
             moveit_config.robot_description,
             moveit_config.robot_description_semantic,
             moveit_config.robot_description_kinematics,
+            {'use_sim_time': False},
+        ],
+        remappings=[
+        ('joint_states', '/joint_states')
         ],
     )
 

@@ -2,4 +2,6 @@ install/
 build/
 log/
 *pycache*
-.vscode/
+.vscode
+video.py
+media/Test.mp4
