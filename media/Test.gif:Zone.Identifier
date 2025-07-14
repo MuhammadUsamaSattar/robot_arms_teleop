@@ -1,4 +1,4 @@
 [ZoneTransfer]
 ZoneId=3
 ReferrerUrl=https://cloudconvert.com/
-HostUrl=https://eu-central.storage.cloudconvert.com/tasks/488a0cc5-b814-455f-b989-b1136c57341d/Test.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250714%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20250714T161952Z&X-Amz-Expires=86400&X-Amz-Signature=575273e6fbd0229bafbe91989fc32a56a3f5f2f15e069cd7730c105ce6cd617d&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22Test.gif%22&response-content-type=image%2Fgif&x-id=GetObject
+HostUrl=https://eu-central.storage.cloudconvert.com/tasks/6cf244a2-0ee7-4122-b2f4-9cb8dc84fe9c/Test.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250714%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20250714T165511Z&X-Amz-Expires=86400&X-Amz-Signature=90d26ef2dc4a374eccfde214b0fcbf27fadcd80cfcdef7e31ec9902294732698&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22Test.gif%22&response-content-type=image%2Fgif&x-id=GetObject

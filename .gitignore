@@ -4,3 +4,4 @@ log/
 *pycache*
 .vscode
 video.py
+media/Test.mp4

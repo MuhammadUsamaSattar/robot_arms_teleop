@@ -3,7 +3,7 @@
 This repo is a ROS2-based project for teleoperating two robotic arms through camera-based pose detection.
 
 # Issues
-Currently, there is a problem with solving the inverse kinematics for the robotic arms using MoveIt2 which prevent the robotic arms from moving to the detected pose. Therefore, only jaw closing/opening action is functional for now.
+Currently, collisions between the two arms are not avoided.
 
 # Installation
 Install the following dependencies for this package:

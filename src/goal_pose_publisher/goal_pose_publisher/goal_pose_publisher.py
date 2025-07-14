@@ -72,7 +72,7 @@ class GoalPosePublisher(Node):
         goal_pose = PoseStamped()
         goal = []
         goal.append((msg.wrist.x - msg.shoulder_top.x) / limit)
-        goal.append((msg.wrist.y - msg.shoulder_top.y) / limit)
+        goal.append(-((msg.wrist.y - msg.shoulder_top.y) / limit))
 
         hand_dx = ((msg.index.x + msg.pinky.x)/2) - msg.wrist.x
         hand_dy = -(((msg.index.y + msg.pinky.y)/2) - msg.wrist.y)
