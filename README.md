@@ -1,4 +1,7 @@
-![Testing Video](/media/Test.gif)
+<div align="center">
+  <img src="/media/Test.gif" alt="GIF of test" width="640"/>
+</div>
+
 # Introduction
 This repo is a ROS2-based project for teleoperating two robotic arms through camera-based pose detection.
 
