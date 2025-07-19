@@ -392,7 +392,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /left/goal_pose
+        Value: /right_goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -412,7 +412,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /right/goal_pose
+        Value: /left_goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -432,7 +432,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /right/current_goal_pose
+        Value: /current_right_goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -452,7 +452,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /left/current_goal_pose
+        Value: /current_left_goal_pose
       Value: true
   Enabled: true
   Global Options:
@@ -510,5 +510,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 512
+  X: 601
   Y: -32

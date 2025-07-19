@@ -15,7 +15,9 @@ find_package(geometry_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Landmarks.msg"
-  DEPENDENCIES geometry_msgs
+  "msg/CombinedLandmarks.msg"
+  "msg/CombinedPoseStamped.msg"
+  DEPENDENCIES geometry_msgs 
 )
 
 if(BUILD_TESTING)

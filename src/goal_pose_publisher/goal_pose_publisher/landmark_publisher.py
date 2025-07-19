@@ -12,7 +12,7 @@ from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
-from robot_arms_teleop_interfaces.msg import Landmarks
+from robot_arms_teleop_interfaces.msg import Landmarks, CombinedLandmarks
 from sensor_msgs.msg import Image
 
 
@@ -31,8 +31,7 @@ class LandMarkPublisher(Node):
         self.landmarked_image = []
         self.cv2_bridge = CvBridge()
 
-        self.landmarks_publisher_right_ = self.create_publisher(Landmarks, '/right/landmarks', 10)
-        self.landmarks_publisher_left_ = self.create_publisher(Landmarks, '/left/landmarks', 10)
+        self.landmarks_publisher_ = self.create_publisher(CombinedLandmarks, 'combined_landmarks', 10)
         self.image_publisher_ = self.create_publisher(Image, 'image', 1)
         self.init_pose_detector_()
         self.timer_ = self.create_timer(1/self.fps, self.detect_pose_)
@@ -124,26 +123,25 @@ class LandMarkPublisher(Node):
             self.generate_landmarked_image_(detection_result, rgb_image)
 
             pose_landmarks_list = args[0].pose_landmarks
-            msg_right = Landmarks()
-            msg_left = Landmarks()
+            msg = CombinedLandmarks()
+            msg.right = Landmarks()
+            msg.left = Landmarks()
 
-            msg_right.shoulder_top = self.get_positions_from_landmark_list_(pose_landmarks_list, 12)
-            msg_right.shoulder_bottom = self.get_positions_from_landmark_list_(pose_landmarks_list, 24)
-            msg_right.wrist = self.get_positions_from_landmark_list_(pose_landmarks_list, 16)
-            msg_right.thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 22)
-            msg_right.index = self.get_positions_from_landmark_list_(pose_landmarks_list, 20)
-            msg_right.pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 18)
+            msg.right.shoulder_top = self.get_positions_from_landmark_list_(pose_landmarks_list, 12)
+            msg.right.shoulder_bottom = self.get_positions_from_landmark_list_(pose_landmarks_list, 24)
+            msg.right.wrist = self.get_positions_from_landmark_list_(pose_landmarks_list, 16)
+            msg.right.thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 22)
+            msg.right.index = self.get_positions_from_landmark_list_(pose_landmarks_list, 20)
+            msg.right.pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 18)
 
-            msg_left = Landmarks()
-            msg_left.shoulder_top = self.get_positions_from_landmark_list_(pose_landmarks_list, 11)
-            msg_left.shoulder_bottom = self.get_positions_from_landmark_list_(pose_landmarks_list, 23)
-            msg_left.wrist = self.get_positions_from_landmark_list_(pose_landmarks_list, 15)
-            msg_left.thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 21)
-            msg_left.index = self.get_positions_from_landmark_list_(pose_landmarks_list, 19)
-            msg_left.pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 17)
+            msg.left.shoulder_top = self.get_positions_from_landmark_list_(pose_landmarks_list, 11)
+            msg.left.shoulder_bottom = self.get_positions_from_landmark_list_(pose_landmarks_list, 23)
+            msg.left.wrist = self.get_positions_from_landmark_list_(pose_landmarks_list, 15)
+            msg.left.thumb = self.get_positions_from_landmark_list_(pose_landmarks_list, 21)
+            msg.left.index = self.get_positions_from_landmark_list_(pose_landmarks_list, 19)
+            msg.left.pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 17)
 
-            self.landmarks_publisher_right_.publish(msg_right)
-            self.landmarks_publisher_left_.publish(msg_left)
+            self.landmarks_publisher_.publish(msg)
             self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(self.landmarked_image))
 
         except Exception:
