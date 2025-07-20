@@ -9,14 +9,7 @@ import math
 
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
-
     urdf_dir = FindPackageShare('robot_arm_model').find('robot_arm_model')
-
-    #urdf_file = os.path.join(urdf_dir, 'urdf', 'so101_new_calib_right.urdf')
-#
-    #with open(urdf_file, 'r') as file:
-    #    right_robot_desc = file.read()
-
     urdf_file = os.path.join(urdf_dir, 'urdf', 'panda.urdf')
 
     with open(urdf_file, 'r') as file:
@@ -24,7 +17,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         DeclareLaunchArgument(
-            'use_sim_time',
+            use_sim_time,
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
         Node(

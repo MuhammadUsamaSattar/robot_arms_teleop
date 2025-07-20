@@ -6,6 +6,7 @@ from cv_bridge import CvBridge
 import mediapipe as mp
 import numpy as np
 import rclpy
+
 from geometry_msgs.msg import Vector3
 from launch_ros.substitutions import FindPackageShare
 from mediapipe import solutions
@@ -37,14 +38,18 @@ class LandMarkPublisher(Node):
         self.timer_ = self.create_timer(1/self.fps, self.detect_pose_)
 
     def detect_pose_(self):
+        """Detects the pose from the input stream
+        """        
         if self.cap.isOpened():
             if self.mode == 'VIDEO':
-                frames_passed = max(1, int((((time.time()*1000) - self.frame_time_stamp)*self.fps)/1000) - 1)
+                # Skip frames if pose detection is taking too long
+                frames_passed = max(1, int((((time.time()*1000) - self.frame_time_stamp)*self.fps)/1000) - 1) 
 
                 while frames_passed > 0:
                     ret, frame = self.cap.read()
                     frames_passed -= 1
             
+                # Detect pose is frame is read from the cap otherwise attempt to reinitialize the input stream
                 if ret == True:
                     mp_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
@@ -62,6 +67,7 @@ class LandMarkPublisher(Node):
             elif self.mode == 'LIVE_STREAM':
                 ret, frame = self.cap.read()
 
+                # Detect pose is frame is read from the cap otherwise attempt to reinitialize the input stream
                 if ret == True:
                     mp_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
@@ -81,6 +87,8 @@ class LandMarkPublisher(Node):
             self.get_logger().error("Error opening video/steam")
 
     def init_pose_detector_(self):
+        """Initializes the pose detector with correct input stream
+        """        
         BaseOptions = mp.tasks.BaseOptions
         PoseLandmarker = mp.tasks.vision.PoseLandmarker
         PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
@@ -89,6 +97,7 @@ class LandMarkPublisher(Node):
         pkg_dir = FindPackageShare('goal_pose_publisher').find('goal_pose_publisher')
         model_path = os.path.join(pkg_dir, 'models', 'pose_landmarker_full.task')
 
+        # Uses the video in video/ as input
         if self.mode == 'VIDEO':
             options = PoseLandmarkerOptions(
                 base_options=BaseOptions(model_asset_path=model_path),
@@ -96,6 +105,7 @@ class LandMarkPublisher(Node):
                 )
             self.cap = cv2.VideoCapture(os.path.join(pkg_dir, 'video', self.video_file))
             
+        # Uses the video from camera as input
         elif self.mode == 'LIVE_STREAM':
             options = PoseLandmarkerOptions(
                 base_options=BaseOptions(model_asset_path=model_path),
@@ -116,6 +126,8 @@ class LandMarkPublisher(Node):
         self.frame_time_stamp = int(time.time()*1000)
 
     def publish_landmark_msgs_(self, *args):
+        """Publishes the relevant landmarks
+        """        
         detection_result = args[0]
         rgb_image = args[1].numpy_view()
 
@@ -142,7 +154,7 @@ class LandMarkPublisher(Node):
             msg.left.pinky = self.get_positions_from_landmark_list_(pose_landmarks_list, 17)
 
             self.landmarks_publisher_.publish(msg)
-            self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(self.landmarked_image))
+            self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(self.landmarked_image)) # Publishes the landmarked image in the appropriate format
 
         except Exception:
             self.get_logger().warn("Some critical landmarks are not detected in the frame. " \
@@ -150,6 +162,8 @@ class LandMarkPublisher(Node):
             self.image_publisher_.publish(self.cv2_bridge.cv2_to_imgmsg(rgb_image))
     
     def generate_landmarked_image_(self, detection_result, rgb_image):
+        """Generates the landmarked image
+        """        
         pose_landmarks_list = detection_result.pose_landmarks
         landmarked_frame = np.copy(rgb_image)
 
@@ -171,6 +185,8 @@ class LandMarkPublisher(Node):
         self.landmarked_image = landmarked_frame
 
     def get_positions_from_landmark_list_(self, landmarks, n):
+        """Returns the landmark at n index as Vector3 msg type
+        """        
         msg = Vector3()
 
         msg.x = landmarks[0][n].x
@@ -179,6 +195,8 @@ class LandMarkPublisher(Node):
         return msg
 
     def destroy_node(self):
+        """Destroy the video capture stream and node
+        """        
         self.cap.release()
         cv2.destroyAllWindows()
 

@@ -2,9 +2,9 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>robot_arms_teleop_interfaces</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="usamasattar.3347@gmail.com">usama</maintainer>
+  <version>0.0.1</version>
+  <description>Package to store custom message for robot_arms_teleop project</description>
+  <maintainer email="usamasattar.3347@gmail.com">Usama Sattar</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

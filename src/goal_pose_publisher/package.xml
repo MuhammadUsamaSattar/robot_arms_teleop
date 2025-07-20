@@ -3,16 +3,19 @@
 <package format="3">
   <name>goal_pose_publisher</name>
   <version>0.0.1</version>
-  <description>TODO: Package description</description>
-  <maintainer email="usamasattar.3347@gmail.com">usama</maintainer>
+  <description>Package for publishing goal poses of both hands and the image overlayed with landmarks</description>
+  <maintainer email="usamasattar.3347@gmail.com">Usama Sattar</maintainer>
   <license>Apache-2.0</license>
 
   <depend>python3-mediapipe-pip</depend>
   <depend>python3-numpy</depend>
   <depend>python3-opencv</depend>
   <depend>geometry_msgs</depend>
+  <depend>rcl_interfaces</depend>
+  <depend>robot_arms_teleop_interfaces</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>tf2_ros</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
