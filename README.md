@@ -5,9 +5,6 @@
 # Introduction
 This repo is a ROS2-based project for teleoperating two robotic arms through camera-based pose detection.
 
-# Issues
-Currently, collisions between the two arms are not avoided.
-
 # Installation
 Install the following dependencies for this package:
 - `Ubuntu 22.04`
@@ -41,3 +38,6 @@ ros2 launch goal_pose_publisher goal_pose_publisher.launch.py
 You can check the available options for the goal_publisher launch file using `--show-args`. Most important options are:
 - `mode`: Options are `VIDEO` and `LIVE_STREAM` (default). `VIDEO` mode works in conjunction with the `video_file` parameter.
 - `video_file`: Name of the video file in `src/goal_pose_publisher/video/`. Defaults to `Video.mp4`. This option only works when `mode` is `VIDEO`.
+
+# Issues
+The motion_planning node can crash if you have a slow PC due to mismatch between frames.
