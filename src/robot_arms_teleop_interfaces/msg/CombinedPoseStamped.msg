@@ -1,0 +1,4 @@
+geometry_msgs/PoseStamped left
+geometry_msgs/PoseStamped right
+bool left_jaw_closed
+bool right_jaw_closed

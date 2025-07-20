@@ -9,11 +9,11 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(robot_arms_teleop_interfaces REQUIRED)
 
 add_executable(motion_planning src/motion_planning.cpp)
-ament_target_dependencies(motion_planning moveit_ros_planning_interface rclcpp std_msgs geometry_msgs)
+ament_target_dependencies(motion_planning moveit_ros_planning_interface rclcpp geometry_msgs robot_arms_teleop_interfaces)
 
 install(TARGETS
   motion_planning

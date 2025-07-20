@@ -23,8 +23,10 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             arguments=[
-                '--x', '0', '--y', '0', '--z', '0', '--roll', str(0), '--pitch', str(0), '--yaw', str(0),
-                '--frame-id', 'right_panda_hand', '--child-frame-id', 'right_goal_pose_frame'
+                '--x', '0.278', '--y', '-0.300', '--z', '0.666', 
+                '--qx', '0.5', '--qy', '0.5',
+                '--qz', '0.5', '--qw', '0.5',
+                '--frame-id', 'combined_base', '--child-frame-id', 'right_goal_pose_frame'
             ],
             parameters=[
                 {'use_sim_time': False}
@@ -34,8 +36,10 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             arguments=[
-                '--x', '0', '--y', '0', '--z', '0', '--roll', str(0), '--pitch', str(0), '--yaw', str(0),
-                '--frame-id', 'left_panda_hand', '--child-frame-id', 'left_goal_pose_frame'
+                '--x', '0.278', '--y', '0.300', '--z', '0.666', 
+                '--qx', '0.5', '--qy', '0.5',
+                '--qz', '0.5', '--qw', '0.5',
+                '--frame-id', 'combined_base', '--child-frame-id', 'left_goal_pose_frame'
             ],
             parameters=[
                 {'use_sim_time': False}
@@ -54,15 +58,6 @@ def generate_launch_description():
         Node(
             package='goal_pose_publisher',
             executable='goal_pose_publisher',
-            namespace='right',
-            parameters=[
-                {'use_sim_time': False}
-                        ],
-        ),
-        Node(
-            package='goal_pose_publisher',
-            executable='goal_pose_publisher',
-            namespace='left',
             parameters=[
                 {'use_sim_time': False}
                         ],
